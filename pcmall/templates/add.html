@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>➕ Бараа нэмэх</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="container">
+    <h2>➕ Бараа нэмэх</h2>
+
+    <form method="post" class="form">
+        <label>Нэр:</label>
+        <input name="name" required><br>
+
+        <label>Үнэ:</label>
+        <input name="price" type="number" required><br>
+
+        <label>Ангилал:</label>
+        <select name="category">
+            {% for c in categories %}
+            <option value="{{ c[0] }}">{{ c[1] }}</option>
+            {% endfor %}
+        </select><br>
+
+        <label>Брэнд:</label>
+        <select name="brand">
+            {% for b in brands %}
+            <option value="{{ b[0] }}">{{ b[1] }}</option>
+            {% endfor %}
+        </select><br>
+
+        <label>Нийлүүлэгч:</label>
+        <select name="supplier">
+            {% for s in suppliers %}
+            <option value="{{ s[0] }}">{{ s[1] }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <button class="btn add-btn" type="submit">Хадгалах</button>
+    </form>
+    <br>
+    <a href="/" class="btn">⬅ Буцах</a>
+</div>
+</body>
+</html>

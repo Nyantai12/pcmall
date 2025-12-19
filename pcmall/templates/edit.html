@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>✏️ Бараа засах</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="container">
+    <h2>✏️ Бараа засах</h2>
+
+    <form method="post" class="form">
+        <label>Нэр:</label>
+        <input type="text" name="name" value="{{ product['name'] }}" required><br>
+
+        <label>Үнэ:</label>
+        <input type="number" name="price" value="{{ product['price'] }}" required><br>
+
+        <label>Ангилал:</label>
+        <select name="category">
+            {% for cat in categories %}
+            <option value="{{ cat['id'] }}" {% if cat['id']==product['category_id'] %}selected{% endif %}>{{ cat['name'] }}</option>
+            {% endfor %}
+        </select><br>
+
+        <label>Брэнд:</label>
+        <select name="brand">
+            {% for b in brands %}
+            <option value="{{ b['id'] }}" {% if b['id']==product['brand_id'] %}selected{% endif %}>{{ b['name'] }}</option>
+            {% endfor %}
+        </select><br>
+
+        <label>Нийлүүлэгч:</label>
+        <select name="supplier">
+            {% for s in suppliers %}
+            <option value="{{ s['id'] }}" {% if s['id']==product['supplier_id'] %}selected{% endif %}>{{ s['name'] }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <button class="btn edit-btn" type="submit">Шинэчлэх</button>
+    </form>
+    <br>
+    <a href="/" class="btn">⬅ Буцах</a>
+</div>
+</body>
+</html>

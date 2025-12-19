@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>🛒 Сагс</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="container">
+    <h2>🛒 Сагс</h2>
+    <a href="/" class="btn add-btn">⬅ Буцах</a>
+    <hr>
+    
+    {% if cart_items %}
+        <div class="cart-list">
+        {% for item in cart_items %}
+            <div class="cart-item">
+                <h3>{{ item['name'] }}</h3>
+                <p>Үнэ: {{ item['price'] }}₮</p>
+                <a href="/delete/{{ item['id'] }}" class="btn delete-btn">🗑 Устгах</a>
+            </div>
+        {% endfor %}
+        </div>
+        <h3>Нийт: {{ total }}₮</h3>
+        <button class="btn add-btn">Захиалах</button>
+    {% else %}
+        <p>Сагс хоосон байна</p>
+    {% endif %}
+</div>
+</body>
+</html>

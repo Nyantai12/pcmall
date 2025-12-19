@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>🖥 PCMall</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="container">
+    <h1>🖥 PCMall</h1>
+    <a href="/add" class="btn add-btn">➕ Бараа нэмэх</a>
+
+    <table class="product-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Нэр</th>
+                <th>Үнэ</th>
+                <th>Ангилал</th>
+                <th>Брэнд</th>
+                <th>Нийлүүлэгч</th>
+                <th>Үйлдэл</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for p in products %}
+            <tr>
+                <td>{{ p[0] }}</td>
+                <td>{{ p[1] }}</td>
+                <td>{{ p[2] }} ₮</td>
+                <td>{{ p[3] }}</td>
+                <td>{{ p[4] }}</td>
+                <td>{{ p[5] }}</td>
+                <td>
+                    <a href="/edit/{{ p[0] }}" class="btn edit-btn">✏️ Засах</a>
+                    <a href="/delete/{{ p[0] }}" class="btn delete-btn" onclick="return confirm('Устгах уу?')">🗑 Устгах</a>
+                    <a href="/add_to_cart/{{ p[0] }}" class="btn add-btn">🛒 Сагс руу нэмэх</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
