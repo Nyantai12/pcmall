@@ -21,7 +21,8 @@
         {% endfor %}
         </div>
         <h3>Нийт: {{ total }}₮</h3>
-        <button class="btn add-btn">Захиалах</button>
+        <button class="btn add-btn" onclick="window.location.href='/checkout'">Захиалах</button>
+
     {% else %}
         <p>Сагс хоосон байна</p>
     {% endif %}

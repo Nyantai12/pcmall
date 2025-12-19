@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, g
+from flask import Flask, flash, render_template, request, redirect, url_for, session, g
 import sqlite3
 
 app = Flask(__name__)
@@ -100,33 +100,82 @@ def delete(id):
     return redirect(url_for('index'))
 
 
-@app.route('/add_to_cart/<int:id>')
+@app.route("/add_to_cart/<int:id>")
 def add_to_cart(id):
-    if 'cart' not in session:
-        session['cart'] = []
-    session['cart'].append(id)
-    return redirect(url_for('cart'))
+    if "cart" not in session:
+        session["cart"] = []
+    session["cart"].append(id)
+    session.modified = True
+    return """ <script>
+        alert("Бараа сагсанд амжилттай нэмэгдлээ!");
+        window.history.back();  // Өмнөх page буюу index.html рүү буцах
+    </script>
+    """
 
-@app.route('/cart')
+@app.route("/cart")
 def cart():
+    con = get_db()
     cart_items = []
     total = 0
-    if 'cart' in session and session['cart']:
-        con = get_db()
-        placeholders = ','.join(['?']*len(session['cart']))
-        cart_items = con.execute(f"SELECT * FROM product WHERE id IN ({placeholders})", session['cart']).fetchall()
-        total = sum([item['price'] for item in cart_items])
-    return render_template('cart.html', cart_items=cart_items, total=total)
+    for pid in session.get("cart", []):
+        item = con.execute("SELECT id, name, price FROM product WHERE id=?", (pid,)).fetchone()
+        if item:
+            cart_items.append({"id": item[0], "name": item[1], "price": item[2]})
+            total += item[2]
+    con.close()
+    return render_template("cart.html", cart_items=cart_items, total=total)
 
+
+@app.route("/checkout")
+def checkout():
+    con = get_db()
+    cur = con.execute("INSERT INTO orders(order_date) VALUES (datetime('now'))")
+    order_id = cur.lastrowid
+    for pid in session.get("cart", []):
+        con.execute("INSERT INTO order_item(order_id, product_id, qty) VALUES (?,?,?)",
+                    (order_id, pid, 1))
+
+    con.commit()
+    con.close()
+    session["cart"] = []  
+     # Alert харуулж, index.html рүү шилжүүлэх
+    return """
+    <script>
+        alert("Захиалга амжилттай үүслээ!");
+        window.location.href = "/";
+    </script>
+    """
 
 
 
 def init_db():
     con = get_db()
-    
+    # ангилал хүснэгт
     con.execute("""CREATE TABLE IF NOT EXISTS category(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT)""")
+    # брэнд хүснэгт
     con.execute("""CREATE TABLE IF NOT EXISTS brand(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT)""")
+    # нийлүүлэгч хүснэгт
     con.execute("""CREATE TABLE IF NOT EXISTS supplier(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, phone TEXT)""")
+    # Захиалга хүснэгт
+    con.execute("""
+    CREATE TABLE IF NOT EXISTS orders(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        order_date TEXT
+    )
+    """)
+
+    # Захиалгын бараа хүснэгт
+    con.execute("""
+    CREATE TABLE IF NOT EXISTS order_item(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        order_id INTEGER,
+        product_id INTEGER,
+        qty INTEGER,
+        FOREIGN KEY(order_id) REFERENCES orders(id),
+        FOREIGN KEY(product_id) REFERENCES product(id)
+    )
+    """)
+    #бараа хүснэгт
     con.execute("""CREATE TABLE IF NOT EXISTS product(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT,
@@ -137,7 +186,7 @@ def init_db():
     FOREIGN KEY(category_id) REFERENCES category(id),
     FOREIGN KEY(brand_id) REFERENCES brand(id),
     FOREIGN KEY(supplier_id) REFERENCES supplier(id)
-)""")
+    )""")
 
     con.commit()
     if con.execute("SELECT COUNT(*) FROM category").fetchone()[0] == 0:
